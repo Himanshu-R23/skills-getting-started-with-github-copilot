@@ -105,3 +105,60 @@ def signup_for_activity(activity_name: str, email: str):
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/participants")
+def unregister_from_activity(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    activity = activities[activity_name]
+
+    # normalize for robust matching
+    normalized_email = email.strip().lower()
+    for i, participant in enumerate(activity["participants"]):
+        if participant.strip().lower() == normalized_email:
+            activity["participants"].pop(i)
+            return {"message": f"Unregistered {email} from {activity_name}"}
+
+    raise HTTPException(status_code=404, detail="Participant not found")
+
+
+@app.get("/activities/{activity_name}/participants")
+def get_participants(activity_name: str):
+    """Get the list of participants for an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    return {"participants": activity["participants"]}
+
+
+@app.get("/activities/{activity_name}/participants-section")
+def get_participants_section(activity_name: str):
+    """Get the participants section for an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    return {"participants": activity["participants"]}
+
+
+@app.get("/activities/{activity_name}/participants-empty")
+def get_participants_empty(activity_name: str):
+    """Get the participants empty section for an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    return {"participants": activity["participants"]}
